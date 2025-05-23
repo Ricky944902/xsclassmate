@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站维护中</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .hp {
+            display: none;
+        }
+        .contact {
+            margin: 30px 0;
+            font-size: 1.2em;
+        }
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: left;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #safeEmail {
+            font-weight: bold;
+            color: #007bff;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚧 网站正在开发中</h1>
+        <div class="contact">
+            <p>有事请联系：</p>
+            <span id="safeEmail"></span>
+        </div>
+
+        <h2>问题反馈</h2>
+        <form id="feedbackForm" onsubmit="return handleSubmit(event)">
+            <!-- 蜜罐字段 -->
+            <div class="hp">
+                <label>请留空：</label>
+                <input type="text" name="website" id="website">
+            </div>
+
+            <label for="name">姓名：</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">您的邮箱：</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="message">问题描述：</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+
+            <button type="submit">提交反馈</button>
+        </form>
+    </div>
+
+    <script>
+        // 防爬虫邮箱显示
+        function safeEmail() {
+            const parts = ['ricky_xs03', '163.com'];
+            return parts.join('@');
+        }
+        document.getElementById('safeEmail').textContent = safeEmail();
+
+        // 表单处理
+        let lastSubmitTime = 0;
+        
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            // 蜜罐验证
+            if (document.getElementById('website').value) {
+                return false;
+            }
+
+            // 提交频率限制（5秒内只能提交一次）
+            const now = Date.now();
+            if (now - lastSubmitTime < 5000) {
+                alert('提交过于频繁，请稍后再试');
+                return false;
+            }
+            lastSubmitTime = now;
+
+            // 构造邮件内容
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+
+            // 清空表单
+            event.target.reset();
+
+            // 显示成功提示
+            alert('反馈已提交，我们将尽快处理！');
+            return false;
+        }
+
+        // 防止右键查看邮箱
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.id === 'safeEmail') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
